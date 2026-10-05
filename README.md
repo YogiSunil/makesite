@@ -109,3 +109,8 @@ If you get stuck on any step, be sure to print the output to `stdout`!
 - [**Go By Example**: Panic](https://gobyexample.com/panic)
 - [**GopherAcademy**: Using Go Templates](https://blog.gopheracademy.com/advent-2017/using-go-templates/)
 - [**rapid7.com**: Building a Simple CLI Tool with Golang](https://blog.rapid7.com/2016/08/04/build-a-simple-cli-tool-with-golang/)
+
+## v1.2
+
+I will use the goldmark library. The documentation is located at https://github.com/yuin/goldmark. My goal is to use it to convert Markdown (.md) files into HTML.
+
