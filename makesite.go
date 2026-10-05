@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html/template"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -23,25 +24,48 @@ func save(filename string, page Page) error {
 	return t.Execute(f, page)
 }
 
-func main() {
-	file := flag.String("file", "first-post.txt", "name of a .txt file to render")
-	flag.Parse()
-
-	data, err := os.ReadFile(*file)
+func render(file string) error {
+	data, err := os.ReadFile(file)
 	if err != nil {
-		fmt.Println("error reading file:", err)
-		os.Exit(1)
+		return err
 	}
 	page := Page{Content: string(data)}
 
 	t := template.Must(template.ParseFiles("template.tmpl"))
 	if err := t.Execute(os.Stdout, page); err != nil {
-		fmt.Println("error rendering template:", err)
-		os.Exit(1)
+		return err
+	}
+	return save(file, page)
+}
+
+func main() {
+	file := flag.String("file", "first-post.txt", "name of a .txt file to render")
+	dir := flag.String("dir", "", "directory to search for .txt files")
+	flag.Parse()
+
+	files := []string{*file}
+	if *dir != "" {
+		entries, err := os.ReadDir(*dir)
+		if err != nil {
+			fmt.Println("error reading directory:", err)
+			os.Exit(1)
+		}
+		files = nil
+		for _, e := range entries {
+			if !e.IsDir() && strings.HasSuffix(e.Name(), ".txt") {
+				files = append(files, filepath.Join(*dir, e.Name()))
+			}
+		}
+		fmt.Println("Found .txt files:")
+		for _, f := range files {
+			fmt.Println(" ", f)
+		}
 	}
 
-	if err := save(*file, page); err != nil {
-		fmt.Println("error saving file:", err)
-		os.Exit(1)
+	for _, f := range files {
+		if err := render(f); err != nil {
+			fmt.Println("error processing", f+":", err)
+			os.Exit(1)
+		}
 	}
 }
