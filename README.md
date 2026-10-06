@@ -2,115 +2,92 @@
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/YogiSunil/makesite)](https://goreportcard.com/report/github.com/YogiSunil/makesite)
 
-_Create your own custom Static Site Generator (like [Jekyll](https://jekyllrb.com/) or [Hugo](https://gohugo.io/)) by cloning and completing this project!_
+A small static site generator written in Go. It reads `.txt` and `.md` files and turns each one into an HTML page using a Go template styled with Tailwind CSS (dark theme).
 
-### 📚 Table of Contents
+## Features
 
-1. [Project Structure](#project-structure)
-2. [Getting Started](#getting-started)
-3. [Deliverables](#deliverables)
-4. [Resources](#resources)
+- Render a single file with `--file`.
+- Render every `.txt` and `.md` file in a directory, including subdirectories, with `--dir`.
+- Markdown (`.md`) files are converted to HTML with [goldmark](https://github.com/yuin/goldmark).
+- Prints a summary when done, for example: `Success! Generated 7 pages (11.9kB total) in 0.01 seconds.`
 
 ## Project Structure
 
-```bash
+```
 📂 makesite
-├── README.md
-├── first-post.txt
+├── makesite.go      # the generator
+├── template.tmpl    # HTML template (Tailwind via CDN)
+├── first-post.txt   # sample posts
 ├── latest-post.txt
-├── makesite.go
-└── template.tmpl
+├── second-post.txt
+├── third-post.txt
+├── fourth-post.txt
+├── fifth-post.md    # sample Markdown post
+├── go.mod
+└── go.sum
 ```
 
-## Getting Started
+## Requirements
 
-1. Visit [github.com/new](https://github.com/new) and create a new repository named `makesite`.
-2. Run each command line-by-line in your terminal to set up the project:
+- [Go](https://go.dev/dl/) 1.22 or newer.
+- Internet access when viewing the pages, because Tailwind is loaded from a CDN.
+
+## How to Run
 
 ```bash
-$ git clone git@github.com:Tech-at-DU/makesite.git
-$ cd makesite
-$ git remote rm origin
-$ git remote add origin git@github.com:YOUR_GITHUB_USERNAME/makesite.git
+git clone https://github.com/YogiSunil/makesite.git
+cd makesite
 ```
 
-## Deliverables
+Generate one page (defaults to `first-post.txt`):
 
-**For each task**:
+```bash
+go run makesite.go
+go run makesite.go --file=latest-post.txt
+```
 
-- Complete each task in the order they appear.
-- Use [GitHub Task List](https://help.github.com/en/github/managing-your-work-on-github/about-task-lists) syntax to update the task list.
+Generate pages for every `.txt` and `.md` file in a directory (recursive):
 
-### MVP
+```bash
+go run makesite.go --dir=.
+```
 
-Complete the MVP as If you finish early, move on to the stretch challenges.
+Or build a binary first:
 
-If you get stuck on any step, be sure to print the output to `stdout`!
+```bash
+go build
+./makesite --dir=.        # Windows: .\makesite.exe --dir=.
+```
 
-#### v1.0 Requirements
+Each input file produces an HTML file next to it, for example `latest-post.txt` becomes `latest-post.html`.
 
-- [ ] Edit line `4` of `README.md`. Change this line to the following, replacing `YOUR_USERNAME` and `YOUR_REPONAME` with your GitHub username and repository name respectively.
-- [ ] Read in the contents of the provided `first-post.txt` file.
-- [ ] Edit the provided HTML template (`template.tmpl`) to display the contents of `first-post.txt`.
-- [ ] Render the contents of `first-post.txt` using Go Templates and print it to stdout.
-- [ ] Write the HTML template to the filesystem to a file. Name it `first-post.html`.
-- [ ] Manually test the generated HTML page by running `./makesite`. Double-click the `first-post.html` file that appears in your directory after running the command to open the generated page in your browser.
-- [ ] **Add, commit, and push to GitHub**.
-- [ ] Add a new flag to your command named `file`. This flag represents the name of any `.txt` file in the same directory as your program. Run `./makesite --file=latest-post.txt` to test.
-- [ ] Update the `save` function to use the input filename to generate a new HTML file. For example, if the input file is named `latest-post.txt`, the generated HTML file should be named `latest-post.html`.
-- [ ] **Add, commit, and push to GitHub**.
+## View the Site
 
-#### v1.0 Stretch Challenges
+Serve the folder and open http://localhost:8000/first-post.html in a browser:
 
-- [ ] Use Bootstrap, or another CSS framework, to enhance the style and readability of your template. _Get creative! Writing your very own website generator is a great opportunity to broadcast your style, personality, and development preferences to the world!_
+```bash
+python -m http.server 8000
+```
 
-### v1.1
+Or just double-click any generated `.html` file.
 
-#### v1.1 Requirements
+## How It Works
 
-- [ ] Create 3 new `.txt` files for testing in the same directory as your project.
-- [ ] Add a new flag to the `makesite` command named `dir`.
-- [ ] Use the flag to find all `.txt` files in the given directory. Print them to `stdout`.
-- [ ] With the list of `.txt` files you found, generate an HTML page for each.
-- [ ] Run `./makesite --dir=.` to test in your local directory.
-- [ ] **Add, commit, and push to GitHub**.
+1. Read the input file.
+2. Convert it to an HTML fragment (`.txt` is escaped and wrapped in `<pre>`, `.md` goes through goldmark).
+3. Render the fragment into `template.tmpl` with Go's `html/template`.
+4. Write the result to `<name>.html`.
 
-#### v1.1 Stretch Challenges
+Edit `template.tmpl` to change the layout and styling, then run the command again to regenerate the pages.
 
-- [ ] Recursively find all `.txt` files in the given directory, as well as it's subdirectories. Print them to `stdout` to make sure. Generate an HTML page for each.
-- [ ] When your program finishes, print: `Success! Generated 5 pages.` The `Success!` substring must be <span style="color: green; font-weight:bold;">bold green</span>, and the count (`5`) must be **bold**.
-- [ ] Modify the success message to read: `Success! Generated 5 pages (18.2kB total).` Calculate the total by summing the size of each HTML file, then converting the total to kilobytes. Always return one significant digit after the decimal point.
-- [ ] Determine how long it took to execute your static site generator. Modify the success message to read: `Success! Generated 5 pages (18.2kB total) in 3.25 seconds.` Always return two significant digits after the decimal point.
-- [ ] Test your solutions to these stretch challenges on many different directories containing `.txt` files. Are there any ways to make your code faster?
+## Progress
 
-### v1.2
+- [x] v1.0: read a file, render it with a Go template, save it as HTML, add the `--file` flag
+- [x] v1.0 stretch: styled the template with Tailwind CSS
+- [x] v1.1: add the `--dir` flag and generate a page for each file
+- [x] v1.1 stretch: recursive search, colored success message, total size and elapsed time
+- [x] v1.2: Go modules and a third-party library
 
-#### v1.2 Requirements
-
-- [ ] Initialize Go modules in your project.
-- [ ] Add any third party library to your project to enhance it's functionality. Some ideas you might consider include **_(CHOOSE ONLY ONE)_**:
-    - [ ] Translating page content using Google Translate.
-    - [ ] Parse Markdown (`.md`) files and transform them into HTML. `#` through `######` should translate to `<h1>` through `<h6>` elements.
-    - [ ] **_FILL IN THE BLANK_**: `I will use the __________________________________ library. The documentation is located at __________________________________. My goal is to use it to __________________________________.`
-- [ ] **Add, commit, and push to GitHub**.
-
-## Resources
-
-### Lesson Plans
-
-- [**ACS 4210**: Project #1 - SSGs](https://tech-at-du.github.io/ACS-4210-Strongly-Typed-Languages/#/Lessons/SSGProject): Code samples you can use to complete the MVP requirements.
-- [**ACS 4210**: Files & Directories](https://tech-at-du.github.io/ACS-4210-Strongly-Typed-Languages/#/Lessons/FilesDirectories): Code samples you can use to complete v1.1 requirements.
-- [**ACS 4210**: Files & Directories](https://tech-at-du.github.io/ACS-4210-Strongly-Typed-Languages/#/Lessons/3rdPartyLibs): Code samples you can use to complete v1.2 requirements.
-
-### Example Code
-
-- [**Go By Example**: Reading Files](https://gobyexample.com/reading-files)
-- [**Go By Example**: Writing Files](https://gobyexample.com/writing-files)
-- [**Go By Example**: Panic](https://gobyexample.com/panic)
-- [**GopherAcademy**: Using Go Templates](https://blog.gopheracademy.com/advent-2017/using-go-templates/)
-- [**rapid7.com**: Building a Simple CLI Tool with Golang](https://blog.rapid7.com/2016/08/04/build-a-simple-cli-tool-with-golang/)
-
-## v1.2
+### v1.2 library
 
 I will use the goldmark library. The documentation is located at https://github.com/yuin/goldmark. My goal is to use it to convert Markdown (.md) files into HTML.
-
