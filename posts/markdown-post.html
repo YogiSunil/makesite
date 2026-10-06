@@ -2,15 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Untitled Custom SSG</title>
+  <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
 </head>
-<body>
-  <h1>Markdown Post</h1>
+<body class="bg-slate-900 text-slate-200 min-h-screen">
+  <main class="max-w-3xl mx-auto px-6 py-12">
+    <h1 class="text-4xl font-bold text-orange-400 mb-8">&#9875; makesite</h1>
+    <article class="prose prose-invert prose-headings:text-orange-400 max-w-none">
+      <h1>Markdown Post</h1>
 <p>This is a <strong>markdown</strong> post rendered with goldmark.</p>
 <ul>
 <li>item one</li>
 <li>item two</li>
 </ul>
 
+    </article>
+  </main>
 </body>
 </html>

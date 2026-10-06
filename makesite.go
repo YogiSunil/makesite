@@ -32,7 +32,7 @@ func convert(filename string, data []byte) (template.HTML, error) {
 		}
 		return template.HTML(buf.String()), nil
 	}
-	return template.HTML(`<pre style="white-space: pre-wrap;">` + html.EscapeString(string(data)) + `</pre>`), nil
+	return template.HTML(`<pre class="whitespace-pre-wrap font-sans bg-transparent">` + html.EscapeString(string(data)) + `</pre>`), nil
 }
 
 // render writes the page for one source file and returns the size of the HTML written.
